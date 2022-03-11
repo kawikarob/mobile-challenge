@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -44,6 +44,7 @@ const DATA = [
 const Item = ({ name, email, gender, role }) => (
   <View style={styles.item}>
     <Text style={styles.title}>{name.firstName + " " + name.lastName}</Text>
+    {/* <Text style={styles.title}>{name.lastName}</Text> */}
     <Text>{email}</Text>
     <Text>{gender}</Text>
     <Text>{role}</Text>
@@ -51,6 +52,18 @@ const Item = ({ name, email, gender, role }) => (
 );
 
 const App = () => {
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  console.log(data);
+
+  useEffect(() => {
+    fetch("https://my.api.mockaroo.com/users.json?page=500&key=930279b0")
+      .then((response) => response.json())
+      .then((json) => setData(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
+
   const renderItem = ({ item }) => (
     <Item
       name={item.name}
@@ -62,11 +75,15 @@ const App = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      {isLoading ? (
+        <Text>Loading...</Text>
+      ) : (
+        <FlatList
+          data={DATA}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </SafeAreaView>
   );
 };
