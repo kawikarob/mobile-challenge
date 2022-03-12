@@ -8,64 +8,39 @@ import {
   StatusBar,
 } from "react-native";
 
-const DATA = [
-  {
-    id: "1",
-    name: {
-      firstName: "Thorny",
-      lastName: "Clayborn",
-    },
-    email: "tclayborn0@altervista.org",
-    gender: "Male",
-    role: "Test Engineer",
-  },
-  {
-    id: 2,
-    name: {
-      firstName: "Layney",
-      lastName: "Juan",
-    },
-    email: "ljuan1@google.com.au",
-    gender: "Male",
-    role: "Vendor",
-  },
-  {
-    id: 3,
-    name: {
-      firstName: "Ulrich",
-      lastName: "Lepper",
-    },
-    email: "ulepper2@example.com",
-    gender: "Male",
-    role: "Vendor",
-  },
-];
-
-const Item = ({ name, email, gender, role }) => (
+const Item = ({ name, email, gender, role, title, id }) => (
   <View style={styles.item}>
     <Text style={styles.title}>{name.firstName + " " + name.lastName}</Text>
-    {/* <Text style={styles.title}>{name.lastName}</Text> */}
     <Text>{email}</Text>
     <Text>{gender}</Text>
     <Text>{role}</Text>
+    <Text>{title}</Text>
+    <Text>{id}</Text>
   </View>
 );
 
 const App = () => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  console.log(data);
+  const [pageCurrent, setPageCurrent] = useState(1);
 
   useEffect(() => {
-    fetch("https://my.api.mockaroo.com/users.json?page=500&key=930279b0")
+    fetch(
+      `https://my.api.mockaroo.com/users.json?page=${pageCurrent}&count=100&key=930279b0`
+    )
       .then((response) => response.json())
-      .then((json) => setData(json))
+      .then((json) => {
+        console.log(json);
+        setData(data.concat(json.entries));
+      })
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
-  }, []);
+  }, [pageCurrent]);
 
   const renderItem = ({ item }) => (
     <Item
+      title={item.title}
+      id={item.id}
       name={item.name}
       email={item.email}
       gender={item.gender}
@@ -73,15 +48,21 @@ const App = () => {
     />
   );
 
+  const handleLoadMore = () => {
+    setPageCurrent(pageCurrent + 1);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {isLoading ? (
         <Text>Loading...</Text>
       ) : (
         <FlatList
-          data={DATA}
+          data={data}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={2}
         />
       )}
     </SafeAreaView>
