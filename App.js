@@ -8,14 +8,13 @@ import {
   StatusBar,
 } from "react-native";
 
-const Item = ({ name, email, gender, role, title, id }) => (
+const Item = ({ name, email, gender, role, title }) => (
   <View style={styles.item}>
     <Text style={styles.title}>{name.firstName + " " + name.lastName}</Text>
     <Text>{email}</Text>
     <Text>{gender}</Text>
     <Text>{role}</Text>
     <Text>{title}</Text>
-    <Text>{id}</Text>
   </View>
 );
 
@@ -55,15 +54,18 @@ const App = () => {
   return (
     <SafeAreaView style={styles.container}>
       {isLoading ? (
-        <Text>Loading...</Text>
+        <Text style={styles.loadingText}>Loading...</Text>
       ) : (
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={2}
-        />
+        <View>
+          <Text style={styles.header}>Employee List</Text>
+          <FlatList
+            data={data}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={2}
+          />
+        </View>
       )}
     </SafeAreaView>
   );
@@ -74,6 +76,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
   },
+  header: {
+    textAlign: "center",
+    fontWeight: "600",
+    paddingBottom: 5,
+    fontSize: 24,
+  },
   item: {
     backgroundColor: "#ECECEC",
     padding: 20,
@@ -81,6 +89,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 12,
     alignItems: "center",
+  },
+  loadingText: {
+    padding: 10,
   },
   title: {
     fontSize: 18,
